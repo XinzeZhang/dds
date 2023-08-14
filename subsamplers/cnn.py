@@ -1,37 +1,33 @@
+#!/usr/bin/env python
 # coding: utf-8
 
-# Import all the things we need ---
-import os, random
-# os.environ["KERAS_BACKEND"] = "theano"
+# Import required modules
+# from keras import layers
+# from keras import models
+import os, pickle
+# import _pickle as cPickle
 os.environ["KERAS_BACKEND"] = "tensorflow"
-# os.environ["THEANO_FLAGS"]  = "device=gpu%d"%(2)   #disabled because we do not have a hardware GPU
 import numpy as np
 from copy import deepcopy
-# import theano as th
-# import theano.tensor as T
-from keras.utils import np_utils
-import keras.models as models
-from keras.layers import Input, merge
-from keras.layers.core import Reshape, Dense, Dropout, Activation, Flatten
-from keras.layers.noise import GaussianNoise
-from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
-from keras.models import Model, load_model
-from keras.regularizers import *
-from keras.optimizers import adam
-from keras.optimizers import adagrad
+import time
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-#import seaborn as sns
-import cPickle, random, sys, keras
-from keras.utils import multi_gpu_model
-from keras import backend as K
-K.tensorflow_backend._get_available_gpus()
-import tensorflow as tf
-
+from tensorflow.python.keras.layers import Reshape,Dense,Dropout,Activation,Flatten,AlphaDropout
+from tensorflow.python.keras.models import load_model
+# from keras.layers.core import Reshape,Dense,Dropout,Activation,Flatten
+# from keras.layers.noise import AlphaDropout
+# from keras.optimizers import adam
+# from keras.utils import multi_gpu_model
+# from keras import backend as K
+# from keras.layers import Input, Dense
+# from keras.models import Model, load_model
+# from keras.callbacks import EarlyStopping
+# K.tensorflow_backend._get_available_gpus()
+# K.set_image_dim_ordering('th')
 
 # Dataset setup
-Xd = cPickle.load(open("../data/RML2016.10b_dict.dat", 'rb'))
+Xd = pickle.load(open("data/RML2016.10b_dict.dat", 'rb'), encoding='bytes')
 snrs, mods = map(lambda j: sorted(list(set(map(lambda x: x[j], Xd.keys())))), [1, 0])
 X = []
 Y_snr = []
@@ -68,7 +64,7 @@ print("shape of X", np.shape(X))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 num_samples = 64
 new_X = []
-orig_model = load_model('../models/cnn_ranker.h5')
+orig_model = load_model('models/cnn_ranker.h5')
 for eva_iter in range(X.shape[0]//60000):
     snr_data = X[eva_iter*60000:(eva_iter+1)*60000]
     snr_out = Y_snr[eva_iter*60000:(eva_iter+1)*60000]
